@@ -1,3 +1,94 @@
+
+# Custom Configuration
+
+
+### create `.env` file
+
+```env
+PORT=3000
+```
+
+### index.html
+```html
+-    <script type="module" src="/src/main.tsx"></script>
++    <script type="module" src="/src/client/main.tsx"></script>
+```
+
+
+
+
+### package.json
+```
++  "main": "src/server/index.ts",
+   "scripts": {
+     "dev": "vite",
+-    "build": "tsc && vite build",
++    "build:client": "vite build --outDir dist/client",
++    "build:server": "vite build --outDir dist/server --ssr src/server/index.ts",
++    "build": "npm run build:client && npm run build:server",
++    "start": "NODE_ENV=prod node dist/server/index.js",
+     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+     "preview": "vite preview"
+   },
+```
+
+
+### vite.config.ts
+```typescript
++import express from "./express-plugin"; //Add this
+ 
+ // https://vitejs.dev/config/
+ export default defineConfig({
+-  plugins: [react()],
++  plugins: [react(), express("src/server")],
+})
+```
+
+
+
+### tsconfig.node.json
+```
+-  "include": ["vite.config.ts"]
++  "include": ["vite.config.ts", "express-plugin.ts"],
+```
+
+
+### express-plugin.ts
+```typescript
+export default function express(path: string) {
+    return {
+      name: "vite-plugin-express",
+      configureServer: async (server: any) => {
+        server.middlewares.use(async (req: any, res: any, next: any) => {
+          process.env["NODE_ENV"] = "dev";
+          try {
+            const { app } = await server.ssrLoadModule(path);
+            app(req, res, next);
+          } catch (err) {
+            console.error(err);
+          }
+        });
+      },
+    };
+  }
+  
+```
+
+
+# Reference
+https://vitejs.dev/guide/ssr
+
+https://github.com/PaulieScanlon/simple-react-ssr-vite-express/blob/main/package.json
+
+https://thenewstack.io/how-to-build-a-server-side-react-app-using-vite-and-express/
+
+https://noam.hashnode.dev/using-vite-to-serve-and-hot-reload-react-app-express-api-together
+
+
+
+
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
