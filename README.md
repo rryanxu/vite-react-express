@@ -75,6 +75,16 @@ export default function express(path: string) {
 ```
 
 
+```bash
+
+npm i express dotenv
+npm i -D @types/express @types/node
+
+
+
+```
+
+
 # Reference
 https://vitejs.dev/guide/ssr
 
