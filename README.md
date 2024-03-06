@@ -8,13 +8,6 @@
 PORT=3000
 ```
 
-### index.html
-```html
--    <script type="module" src="/src/main.tsx"></script>
-+    <script type="module" src="/src/client/main.tsx"></script>
-```
-
-
 
 
 ### package.json
@@ -24,7 +17,7 @@ PORT=3000
      "dev": "vite",
 -    "build": "tsc && vite build",
 +    "build:client": "vite build --outDir dist/client",
-+    "build:server": "vite build --outDir dist/server --ssr src/server/index.ts",
++    "build:server": "tsc  --project tsconfig.server.json ",
 +    "build": "npm run build:client && npm run build:server",
 +    "start": "NODE_ENV=prod node dist/server/index.js",
      "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
@@ -40,7 +33,7 @@ PORT=3000
  // https://vitejs.dev/config/
  export default defineConfig({
 -  plugins: [react()],
-+  plugins: [react(), express("src/server")],
++  plugins: [react(), express("server")],
 })
 ```
 
@@ -75,11 +68,38 @@ export default function express(path: string) {
 ```
 
 
+### tsconfig.server.json
+```json
+{
+  "compilerOptions": {
+    /* Visit https:
+    /* Projects */
+    /* Language and Environment */
+    "target": "ES2020" /* Set the JavaScript language version for emitted JavaScript and include compatible library declarations. */,
+    /* Modules */
+    "module": "ESNext" /* Specify what module code is generated. */,
+    "outDir": "./dist/server" /* Specify an output folder for all emitted files. */,
+    /* Interop Constraints */
+    "esModuleInterop": true /* Emit additional JavaScript to ease support for importing CommonJS modules. This enables 'allowSyntheticDefaultImports' for type compatibility. */,
+    "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
+    /* Type Checking */
+    "strict": true /* Enable all strict type-checking options. */,
+    /* Completeness */
+    "skipLibCheck": true /* Skip type checking all .d.ts files. */,
+    "moduleResolution": "bundler"
+  },
+  "include": ["server"]
+}
+
+```
+
+
+
+
 ```bash
 
 npm i express dotenv
 npm i -D @types/express @types/node
-
 
 
 ```
